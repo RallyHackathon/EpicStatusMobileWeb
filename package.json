@@ -1,0 +1,27 @@
+{
+  "name": "epic_status",
+  "description": "hackathon.",
+  "author": {
+    "name": "David Granger"
+  },
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=0.4.10"
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "http://github.com/dgranger/Epic-Status.git"
+  },
+  "preferGlobal": false,
+  "dependencies": {
+    "coffee-script": ">=1.1.1"
+  },
+  "devDependencies": {
+    "coffeedoctest": ">=0.2.0",
+    "jitter": ">=1.1.1",
+    "uglify-js": ">=1.2.5"
+  },
+  "scripts":{
+    "test":"cake test"
+  }
+}

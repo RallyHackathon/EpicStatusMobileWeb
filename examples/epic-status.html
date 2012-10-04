@@ -1,0 +1,156 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>
+          Epic Status
+        </title>
+        
+      	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+      	<link rel="stylesheet" href="../lib/jquery.mobile.min.css" />
+      	<script src="../lib/jquery.min.js"></script>
+      	<script src="../lib/jquery.mobile.min.js"></script>
+        
+        <!-- Lumenize -->
+        <script type="text/javascript" src="../lib/lumenize/deploy/lumenize-min.js" deploy_src="http://lmaccherone.github.com/Lumenize/deploy/lumenize-min.js"></script>
+        
+        <!-- rally_analytics -->
+        <script type="text/javascript" src="../lib/analyticsquery.js"></script> 
+        
+        <!-- rallyquery -->
+        <script type="text/javascript" src="../lib/rallyquery.js"></script> 
+
+        <!-- my calculator for this chart -->
+        <script type="text/javascript" src="../lib/epic-status.js"></script> 
+                
+        <script type="text/javascript">
+        
+            var lumenize = require('/lumenize');
+            lumenize.ChartTime.setTZPath('anything');
+            
+
+            var workspaceOID = 3339762812;
+            var projectScopingUp = false;
+            var projectScopingDown = true;
+
+            var apiConfig = {
+              'X-RallyIntegrationName': 'Epic Status',
+              'X-RallyIntegrationVendor': 'NetApp - David Granger',
+              'X-RallyIntegrationVersion': '0.1.0',
+              workspaceOID: workspaceOID
+            };
+            
+            var epicStatusCalcs;
+            
+            var snapshots;
+            
+            var interestingEpics = [
+              {name:'EPIC CI & TQP Enhancements', objectID:6463038209},
+              {name:'On line help', objectID:4947934561},
+              {name:'Solution testcase automation', objectID:6463155138},
+              {name:'GUI automation', objectID:6461211528}        
+            ];
+            
+            var objectIDs = [];
+            
+            for (var _i = 0, _len = interestingEpics.length; _i < _len; _i++) {
+              row = interestingEpics[_i];
+              objectIDs.push(row.objectID);
+            };
+            
+            var calculatorConfig = {
+              interestingEpics: interestingEpics,
+              trackingDelay: 0
+            };
+                        
+            $(document).ready(function() {
+                
+              query = new GuidedAnalyticsQuery(apiConfig);
+              
+              query.server = 'hackathon.rallydev.com';
+                
+//              query.debug();
+              
+              query.scope({
+                _ItemHierarchy: objectIDs,
+//                Release: 4913116054
+              });
+            
+              query.additionalCriteria({
+                  __At: "current",
+                  Children: null,
+                  _TypeHierarchy: 3339888029
+              });
+            
+              query.fields(['ObjectID', 'ScheduleState', '_ValidFrom', '_ValidTo', 'PlanEstimate', '_ItemHierarchy']); 
+              query.hydrate(['ScheduleState']);
+            
+              query.find() // Only called here to set _find for debugging
+              
+              query.getAll(gotSnapshots);
+                
+            });
+            
+            gotSnapshots = function() {
+              
+              snapshots = this.allResults;
+                            
+              var rallyQuery = new RallyQuery(apiConfig);
+              
+              rallyQuery.endpoint = 'release.js';
+
+              rallyQuery.query('(ObjectID = 4913116064)');
+              
+              rallyQuery.order('CreationDate desc');
+              
+              rallyQuery.getAll(gotReleaseInfo);   
+              
+            };
+            
+            gotReleaseInfo = function() {
+              calculatorConfig.releaseInfo = this.allResults;
+                               
+              epicStatusCalcs = epicStatusCalculator(snapshots, calculatorConfig);
+              
+              for (var _i = 0, _len = epicStatusCalcs.length; _i < _len; _i++) {
+                $('#name' + _i).html(epicStatusCalcs[_i].name);
+                $('#points' + _i).html(epicStatusCalcs[_i].points);
+                $('#svg' + _i).html(epicStatusCalcs[_i].svg);
+                $('#barChartSVG' + _i).html(epicStatusCalcs[_i].barChartSVG);
+              };
+            
+            };
+               
+        </script>
+        
+        <style type="text/css"> 
+          table { width:100%; }
+          table caption { text-align:center;  }
+          table thead th { text-align:center; border-bottom-width:1px; border-top-width:1px; }
+          table th, td { text-align:center; padding:1px;} 
+        </style> 
+        
+    </head>
+    <body>
+    
+    <div data-role="page">
+
+      <div data-role="header">
+    		<h1>NetApp Epic Status</h1>
+    	</div><!-- /header -->
+
+	    <div data-role="content">	
+        <table>
+          <tr><th>Name</th><th>Total Story Plan Estimate</th><th>% Done By Story Plan Estimate</th><th>Status Detail</th></tr>
+          <tr><td id='name0'>Some Epic</td><td id='points0'>xxx</td><td id='barChartSVG0'>zzz</td><td id='svg0'>goes here</td></tr>
+          <tr><td id='name1'>Some Epic</td><td id='points1'>xxx</td><td id='barChartSVG1'>zzz</td><td id='svg1'>goes here</td></tr>
+          <tr><td id='name2'>Some Epic</td><td id='points2'>xxx</td><td id='barChartSVG2'>zzz</td><td id='svg2'>goes here</td></tr>
+          <tr><td id='name3'>Some Epic</td><td id='points3'>xxx</td><td id='barChartSVG3'>zzz</td><td id='svg3'>goes here</td></tr>
+        </table>
+
+      </div><!-- /content -->
+
+    </div><!-- /page -->
+        
+    </body>
+</html>
