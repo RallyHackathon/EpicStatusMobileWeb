@@ -1,6 +1,6 @@
 {
   "name": "epic_status",
-  "description": "hackathon.",
+  "description": "Shows the current status of an Epic (RED/GREEN/YELLOW)",
   "author": {
     "name": "David Granger"
   },
@@ -10,18 +10,10 @@
   },
   "repository": {
     "type" : "git",
-    "url" : "http://github.com/dgranger/Epic-Status.git"
+    "url" : "http://github.com/RallyHackathon/EpicStatusMobileWeb.git"
   },
   "preferGlobal": false,
   "dependencies": {
     "coffee-script": ">=1.1.1"
-  },
-  "devDependencies": {
-    "coffeedoctest": ">=0.2.0",
-    "jitter": ">=1.1.1",
-    "uglify-js": ">=1.2.5"
-  },
-  "scripts":{
-    "test":"cake test"
   }
 }
