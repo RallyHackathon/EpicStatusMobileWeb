@@ -1,5 +1,7 @@
 # Epic Status Mobile Web Application #
 
+[2 minute demo video](http://screencast.com/t/Flyl1FdQ5P3)
+
 David Granger from NetApp paired with Larry Maccherone from Rally created
 this application. It is designed to run on a smartphone browser. It shows
 the current status of an Epic (RED/GREEN/YELLOW) using the same algorithm
