@@ -15,8 +15,9 @@ YELLOW = '#FBDE98'
 
 epicStatusCalculator = (results, config) ->
   ###
-  Takes the "results" from a query to Rally's Analytics API (or similar MVCC-based implementation)
-  and returns the series for burn charts. 
+  Takes the "results" from a query to Rally's Lookback API and returns the SVG
+  for the % Done Status Detail. It also returns the SVG for a % Done Status Bar
+  Chart.
   ###
 
   output = []
@@ -68,7 +69,6 @@ epicStatusCalculator = (results, config) ->
   
     filteredResults = []
     for r in results
-#       console.log(JSON.stringify(r, undefined, 2))
       if r._ItemHierarchy[0] == row.objectID
         filteredResults.push(r)
         
@@ -107,15 +107,8 @@ epicStatusCalculator = (results, config) ->
     for aaa, idx in aggregationAtArray
       if idx >= config.trackingDelay
         x = idx * svgSlice
-        y = (1 - aaa.FractionComplete) * svgHeight
+        y = (1 - aaa.FractionComplete) * svgHeight  # accumulate the aaa.FractionComplete * 100 if you want an array of % Done over time
         svgPoints += "#{x},#{y} "
-      
-    console.log(svgPoints)
-    ###
-    color = '#00FF00'
-    if percentTimeComplete > percentPointsComplete
-      color = '#FF0000'
-    ###
     
     acceptanceStartDelay = 0.15 * (releaseDateRDN - releaseStartDateRDN)
     warningDelay = acceptanceStartDelay
@@ -148,6 +141,7 @@ epicStatusCalculator = (results, config) ->
     </svg>
     """
   
+    # !TODO: Make Text Scale with svgHeight
     barChartSVG = """
     <svg width="#{svgWidth}px" height="#{svgHeight}px" xmlns="http://www.w3.org/2000/svg" version="1.1">
       <rect y="#{svgThirdHeight}px" rx="4px" ry="4px" height="#{svgThirdHeight}px" width="#{svgWidth}px" stroke-width="0" fill="#{GRAY}" />
